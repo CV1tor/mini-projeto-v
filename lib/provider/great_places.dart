@@ -33,16 +33,23 @@ class GreatPlaces with ChangeNotifier {
             ),
           )
           .toList();
+    } else {
+      print("\n MOSTRANDO FIREBASE... \n");
+      final response = await http.get(Uri.parse("$_url/places.json"));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> body = json.decode(response.body);
+
+        body.values.forEach((element) {
+          Place newPlace = Place.fromJson(element);
+
+          _items.add(newPlace);
+        });
+      } else {
+        throw Exception('[ERRO] Não foi possível carregar items do firebase');
+      }
     }
-    // else {
-    //   print("\n MOSTRANDO FIREBASE... \n");
-    //   final future = http.get(Uri.parse("$_url/places.json"), 
-    //   headers: <String, String> {
-    //     'Content-type'
-    //   });
 
-
-    // }
+    _items.sort(((a, b) => int.parse(b.id).compareTo(int.parse(a.id))));
 
     notifyListeners();
   }
@@ -62,10 +69,11 @@ class GreatPlaces with ChangeNotifier {
   void addPlace(
     String title,
     File image,
+    String id
   ) async {
     bool conectadoInternet = await InternetConnectionChecker().hasConnection;
     final newPlace = Place(
-        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        id: id.isNotEmpty ? id : DateTime.now().microsecondsSinceEpoch.toString(),
         title: title,
         location: null,
         image: image);
@@ -86,26 +94,68 @@ class GreatPlaces with ChangeNotifier {
       if (future.statusCode != 200) {
         throw Exception("[ERRO] Não foi possível adicionar o lugar! \n");
       }
-    }
-    else {
+    } else {
       print("SEM CONEXÃO COM A INTERNET! \n");
     }
 
-    DbUtil.insert('places', {
+    await DbUtil.insert('places', {
       'id': newPlace.id,
       'title': newPlace.title,
       'image': newPlace.image.path
     });
 
+    final dataList = await DbUtil.getData('places');
+
+    // Salvar apenas os 5 ultimos lugares
+    if (dataList.length > 5) {
+      print(
+          "\n BANCO LOCAL COM MAIS DE 5 REGISTROS! DELETANDO MAIS ANTIGO... ");
+
+      await DbUtil.delete('table', dataList[0]['id']);
+    }
+
     _items.add(newPlace);
+    _items.sort(((a, b) => int.parse(b.id).compareTo(int.parse(a.id))));
     notifyListeners();
   }
 
-  void removePlace(String id) {
+  void removePlace(String id) async {
     _items.removeWhere((element) => element.id == id);
 
-    DbUtil.delete('places', id);
+    await DbUtil.delete('places', id);
 
     notifyListeners();
+  }
+
+   syncData() async {
+    bool conectadoInternet = await InternetConnectionChecker().hasConnection;
+
+    if (conectadoInternet) {
+      final dataList = await DbUtil.getData('places');
+
+      for (var i = dataList.length; i > 0; i--) {
+        bool contains =
+            items.any((element) => element.id == dataList[i].values.first);
+
+        if (contains) {
+          print("\n Tem o valor ${dataList[i].values} \n");
+
+        } else {
+          print("\n Adicionando ${dataList[i].values}... \n");
+
+          addPlace(dataList[i]['title'], File(dataList[i]['image']), dataList[i]['id']);
+
+          notifyListeners();
+
+          
+        }
+      }
+    } else {
+      throw Exception('[ERRO] Para sincronizar é necessário estar conectado!');
+    }
+
+    return SnackBar(content: Text('Sincronizado com sucesso!'));
+
+    
   }
 }

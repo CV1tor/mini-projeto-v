@@ -18,10 +18,34 @@ class _ImageInputState extends State<ImageInput> {
   //Capturando Imagem
   File? _storedImage;
 
-  _takePicture() async {
+  _takePictureCamera() async {
     final ImagePicker _picker = ImagePicker();
+
     XFile imageFile = await _picker.pickImage(
       source: ImageSource.camera,
+      maxWidth: 600,
+    ) as XFile;
+
+    if (imageFile == null) return;
+
+    setState(() {
+      _storedImage = File(imageFile.path);
+    });
+
+    //pegar pasta que posso salvar documentos
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    String fileName = path.basename(_storedImage!.path);
+    final savedImage = await _storedImage!.copy(
+      '${appDir.path}/$fileName',
+    );
+    widget.onSelectImage(savedImage);
+  }
+
+  _takePictureGallery() async {
+    final ImagePicker _picker = ImagePicker();
+
+    XFile imageFile = await _picker.pickImage(
+      source: ImageSource.gallery,
       maxWidth: 600,
     ) as XFile;
 
@@ -61,14 +85,21 @@ class _ImageInputState extends State<ImageInput> {
                 )
               : Text('Nenhuma Imagem!'),
         ),
-        SizedBox(width: 10),
+        SizedBox(width: 5),
         Expanded(
-          child: TextButton.icon(
-            icon: Icon(Icons.camera),
-            label: Text('Tirar foto'),
-            onPressed: _takePicture,
+          child: IconButton(
+            icon: Icon(Icons.photo_camera, color: Colors.indigo),
+            //label: Text('Tirar foto', textAlign: TextAlign.center),
+            onPressed: _takePictureCamera,
           ),
         ),
+        Expanded(
+          child: IconButton(
+            icon: Icon(Icons.photo, color: Colors.indigo),
+            //label: Text('Escolher da galeria'),
+            onPressed: _takePictureGallery,
+          ),
+        )
       ],
     );
   }

@@ -21,31 +21,34 @@ class PlacesListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: Provider.of<GreatPlaces>(context, listen: false).loadPlaces(),
-        builder: (ctx, snapshot) => snapshot.connectionState ==
-                ConnectionState.waiting
-            ? Center(child: CircularProgressIndicator())
-            : Consumer<GreatPlaces>(
-                child: Center(
-                  child: Text('Nenhum local'),
-                ),
-                builder: (context, greatPlaces, child) =>
-                    greatPlaces.itemsCount == 0
-                        ? child!
-                        : ListView.builder(
-                            itemCount: greatPlaces.itemsCount,
-                            itemBuilder: (context, index) => ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: FileImage(
-                                    greatPlaces.itemByIndex(index).image),
+      body:
+          FutureBuilder(
+            future: Provider.of<GreatPlaces>(context, listen: false).loadPlaces(),
+            builder: (ctx, snapshot) => snapshot.connectionState ==
+                    ConnectionState.waiting
+                ? Center(child: CircularProgressIndicator())
+                : Consumer<GreatPlaces>(
+                    child: Center(
+                      child: Text('Nenhum local'),
+                    ),
+                    builder: (context, greatPlaces, child) =>
+                        greatPlaces.itemsCount == 0
+                            ? child!
+                            : ListView.builder(
+                                itemCount: greatPlaces.itemsCount,
+                                itemBuilder: (context, index) => ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: FileImage(
+                                        greatPlaces.itemByIndex(index).image),
+                                  ),
+                                  title: Text(greatPlaces.itemByIndex(index).title),
+                                  onTap: () {},
+                                ),
                               ),
-                              title: Text(greatPlaces.itemByIndex(index).title),
-                              onTap: () {},
-                            ),
-                          ),
-              ),
-      ),
+                  ),
+          ),
+      
+      floatingActionButton: FloatingActionButton(onPressed: () => Provider.of<GreatPlaces>(context, listen: false).syncData(), child: Icon(Icons.sync),),
     );
   }
 }

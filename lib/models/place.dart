@@ -31,11 +31,12 @@ class Place {
   });
 
   factory Place.fromJson(Map<String, dynamic> json) {
+    final image = File(json['image']);
+    
     return Place(
       id: json['id'],
       title: json['title'],
-      location: PlaceLocation.fromJson(json['location']),
-      image: json['image'],
+      image: image,
     );
   }
 }
