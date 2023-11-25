@@ -1,3 +1,4 @@
+import 'package:f07_recursos_nativos/screens/place_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         home: PlacesListScreen(),
         routes: {
           AppRoutes.PLACE_FORM: (ctx) => PlaceFormScreen(),
+          AppRoutes.PLACE_DETAIL: (ctx) => PlaceDetail()
         },
       ),
     );

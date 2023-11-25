@@ -66,14 +66,12 @@ class GreatPlaces with ChangeNotifier {
     return _items[index];
   }
 
-  void addPlace(
-    String title,
-    File image,
-    String id
-  ) async {
+  void addPlace(String title, File image, String id) async {
     bool conectadoInternet = await InternetConnectionChecker().hasConnection;
     final newPlace = Place(
-        id: id.isNotEmpty ? id : DateTime.now().microsecondsSinceEpoch.toString(),
+        id: id.isNotEmpty
+            ? id
+            : DateTime.now().microsecondsSinceEpoch.toString(),
         title: title,
         location: null,
         image: image);
@@ -127,35 +125,34 @@ class GreatPlaces with ChangeNotifier {
     notifyListeners();
   }
 
-   syncData() async {
+  syncData() async {
     bool conectadoInternet = await InternetConnectionChecker().hasConnection;
 
     if (conectadoInternet) {
       final dataList = await DbUtil.getData('places');
 
-      for (var i = dataList.length; i > 0; i--) {
+      for (var i = dataList.length - 1; i > 0; i--) {
+        print('\n $i \n');
         bool contains =
             items.any((element) => element.id == dataList[i].values.first);
 
         if (contains) {
           print("\n Tem o valor ${dataList[i].values} \n");
-
         } else {
           print("\n Adicionando ${dataList[i].values}... \n");
 
-          addPlace(dataList[i]['title'], File(dataList[i]['image']), dataList[i]['id']);
+          addPlace(dataList[i]['title'], File(dataList[i]['image']),
+              dataList[i]['id']);
 
           notifyListeners();
-
-          
         }
       }
     } else {
       throw Exception('[ERRO] Para sincronizar é necessário estar conectado!');
     }
 
-    return SnackBar(content: Text('Sincronizado com sucesso!'));
-
-    
+    return;
   }
+
+  void editPlace(String tite, File image, String id) {}
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:f07_recursos_nativos/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +8,10 @@ import '../provider/great_places.dart';
 import '../utils/app_routes.dart';
 
 class PlacesListScreen extends StatelessWidget {
+
+  _placeDetails(BuildContext context, Place place) {
+    Navigator.of(context).pushNamed(AppRoutes.PLACE_DETAIL, arguments: place);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +47,7 @@ class PlacesListScreen extends StatelessWidget {
                                         greatPlaces.itemByIndex(index).image),
                                   ),
                                   title: Text(greatPlaces.itemByIndex(index).title),
-                                  onTap: () {},
+                                  onTap: () => _placeDetails(context, greatPlaces.itemByIndex(index)),
                                 ),
                               ),
                   ),
