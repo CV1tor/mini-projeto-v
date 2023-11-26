@@ -15,6 +15,7 @@ class GreatPlaces with ChangeNotifier {
   List<Place> _items = [];
 
   Future<void> loadPlaces() async {
+    _items = [];
     bool conectadoInternet = await InternetConnectionChecker().hasConnection;
 
     if (!conectadoInternet) {
@@ -109,7 +110,7 @@ class GreatPlaces with ChangeNotifier {
       print(
           "\n BANCO LOCAL COM MAIS DE 5 REGISTROS! DELETANDO MAIS ANTIGO... ");
 
-      await DbUtil.delete('table', dataList[0]['id']);
+      await DbUtil.delete('places', dataList[0]['id']);
     }
 
     _items.add(newPlace);

@@ -1,3 +1,4 @@
+import 'package:f07_recursos_nativos/screens/login_screen.dart';
 import 'package:f07_recursos_nativos/screens/place_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,10 +27,13 @@ class MyApp extends StatelessWidget {
                   primary: Colors.indigo,
                   secondary: Colors.amber,
                 )),
-        home: PlacesListScreen(),
+        initialRoute: '/login',
         routes: {
           AppRoutes.PLACE_FORM: (ctx) => PlaceFormScreen(),
-          AppRoutes.PLACE_DETAIL: (ctx) => PlaceDetail()
+          AppRoutes.PLACE_DETAIL: (ctx) => PlaceDetail(),
+          AppRoutes.PLACES_LIST: (ctx) => PlacesListScreen(), 
+          AppRoutes.LOGIN: (ctx) => LoginScreen(),
+          
         },
       ),
     );

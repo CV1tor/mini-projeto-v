@@ -8,14 +8,12 @@ import '../components/image_input.dart';
 import '../components/location_input.dart';
 import '../provider/great_places.dart';
 
-class PlaceDetail extends StatefulWidget{
-  
+class PlaceDetail extends StatefulWidget {
   _PlaceDetailState createState() => _PlaceDetailState();
 }
 
 class _PlaceDetailState extends State<PlaceDetail> {
   final _titleController = TextEditingController();
-
 
   //deve receber a imagem
   File? _pickedImage;
@@ -42,10 +40,10 @@ class _PlaceDetailState extends State<PlaceDetail> {
     _titleController.text = place.title;
 
     _pickedImage = File('${place.image}');
-  
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Lugar'),
+        title: Text('Detalhes do ${place.title}'),
       ),
       body: Column(
         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,40 +51,58 @@ class _PlaceDetailState extends State<PlaceDetail> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(
-                        labelText: 'Título',
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Text(place.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          )),
+                      SizedBox(height: 30),
+                      SizedBox(
+                          width: 400,
+                          height: 300,
+                          child: Card(
+                            child: Image.file(place.image, fit: BoxFit.cover),
+                            clipBehavior: Clip.antiAlias,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          )),
+                      SizedBox(
+                        height: 30,
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    ImageInput(this._selectImage),
-                    SizedBox(height: 10),
-                    LocationInput(),
-                  ],
+                      Row(
+                        children: [
+                          Expanded(
+                              child: ElevatedButton.icon(
+                            label: Text('Editar lugar'),
+                            icon: Icon(Icons.edit),
+                            onPressed: () => {},
+                          ))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: OutlinedButton.icon(
+                                  onPressed: () => {},
+                                  icon: Icon(Icons.delete, color: Colors.red,),
+                                  style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.red)),
+                                  label: Text('Excluir lugar', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),)))
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          ElevatedButton.icon(
-            icon: Icon(Icons.add),
-            label: Text('Salvar'),
-            style: ElevatedButton.styleFrom(
-              primary: Theme.of(context).colorScheme.secondary,
-              onPrimary: Colors.black,
-              elevation: 0,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            onPressed: () => _editPlace(place.id),
           ),
         ],
       ),
     );
   }
 }
-
-
